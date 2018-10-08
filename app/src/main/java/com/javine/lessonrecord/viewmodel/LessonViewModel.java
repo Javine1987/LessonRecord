@@ -9,6 +9,7 @@ import com.javine.lessonrecord.SingleLiveEvent;
 import com.javine.lessonrecord.data.Lesson;
 import com.javine.lessonrecord.data.LessonsDataSource;
 import com.javine.lessonrecord.data.LessonsRepository;
+import com.javine.lessonrecord.ui.addedit.AddEditLessonActivity;
 
 import java.util.List;
 
@@ -64,10 +65,12 @@ public class LessonViewModel extends AndroidViewModel {
         });
     }
 
-    public void addLesson(Lesson lesson) {
-        // TODO: 18-9-30 此处仅为验证, 应该由AddItemViewModel负责处理
-        mRepository.saveLesson(lesson);
-        loadLessons(false, false);
+    public void handleActivityResult(int requestCode, int resultCode){
+        if (AddEditLessonActivity.REQUEST_CODE == requestCode) {
+            switch (requestCode) {
+
+            }
+        }
     }
 
 }

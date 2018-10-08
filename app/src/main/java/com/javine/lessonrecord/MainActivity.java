@@ -2,6 +2,7 @@ package com.javine.lessonrecord;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 
 import com.javine.lessonrecord.data.Lesson;
 import com.javine.lessonrecord.ui.LessonListFragment;
+import com.javine.lessonrecord.ui.addedit.AddEditLessonActivity;
 import com.javine.lessonrecord.util.ActivityUtils;
 import com.javine.lessonrecord.viewmodel.LessonViewModel;
 
@@ -66,13 +68,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void addNewLesson(){
-        // TODO: 18-9-30 验证数据库是否正常, 需要改成跳转到addItem页面
-        Lesson lesson = new Lesson();
-        lesson.setDate(new Date(System.currentTimeMillis()));
-        lesson.setDuration(75);
-        lesson.setPlace("Funny");
-        lesson.setSalary(120);
-        mViewModel.addLesson(lesson);
+        Intent intent = new Intent(this, AddEditLessonActivity.class);
+        startActivityForResult(intent, AddEditLessonActivity.REQUEST_CODE);
     }
 
     public static LessonViewModel obtainViewModel(FragmentActivity activity){
@@ -88,6 +85,11 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mViewModel.handleActivityResult(requestCode, resultCode);
     }
 
     @Override
@@ -118,17 +120,15 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
+        if (id == R.id.nav_list) {
+            // Do nothing
+        } else if (id == R.id.nav_statistics) {
+            // 跳转到统计页面
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_extra) {
 
         }
 

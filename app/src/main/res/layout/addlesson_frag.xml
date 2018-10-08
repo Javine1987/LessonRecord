@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edit_item_height"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            android:text="地点: "/>
+
+        <AutoCompleteTextView
+            android:id="@+id/studio_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="16dp"
+            android:hint="舞蹈室名称"
+            android:textSize="14sp"
+            android:inputType="text"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edit_item_height"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:text="时长: "/>
+
+
+        <EditText
+            android:id="@+id/duration"
+            android:hint="时长(分钟)"
+            android:textSize="14sp"
+            android:layout_marginLeft="16dp"
+            android:inputType="numberDecimal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edit_item_height"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:text="报酬: "/>
+
+        <EditText
+            android:id="@+id/salary"
+            android:hint="报酬(RMB)"
+            android:textSize="14sp"
+            android:layout_marginLeft="16dp"
+            android:inputType="numberDecimal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edit_item_height"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:text="日期: "/>
+
+        <TextView
+            android:id="@+id/date"
+            android:textSize="14sp"
+            android:layout_marginLeft="16dp"
+            android:gravity="center"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/ic_arrow_drop_down"
+            android:textColor="@color/colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/time"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginLeft="16dp"
+            android:drawableRight="@drawable/ic_arrow_drop_down"
+            android:drawablePadding="5dp"
+            android:textColor="@color/colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+</LinearLayout>

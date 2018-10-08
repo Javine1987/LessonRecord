@@ -9,6 +9,7 @@ import com.javine.lessonrecord.data.LessonDatabase;
 import com.javine.lessonrecord.data.LessonsLocalDataSource;
 import com.javine.lessonrecord.data.LessonsRepository;
 import com.javine.lessonrecord.util.AppExecutors;
+import com.javine.lessonrecord.viewmodel.AddEditViewModel;
 import com.javine.lessonrecord.viewmodel.LessonViewModel;
 
 /**
@@ -54,6 +55,8 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory{
         // TODO: 18-9-30 构造不同的ViewModel实例
         if (modelClass.isAssignableFrom(LessonViewModel.class)) {
             return (T) new LessonViewModel(mApplication, mRepository);
+        } else if (modelClass.isAssignableFrom(AddEditViewModel.class)){
+            return (T) new AddEditViewModel(mApplication, mRepository);
         }
         throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
     }

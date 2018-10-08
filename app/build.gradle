@@ -6,7 +6,7 @@ android {
         applicationId "com.javine.lessonrecord"
         minSdkVersion 24
         targetSdkVersion 27
-        versionCode 1
+        versionCode 1000
         versionName "1.0"
 
         javaCompileOptions {
