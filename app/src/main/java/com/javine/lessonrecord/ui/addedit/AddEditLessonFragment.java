@@ -1,5 +1,8 @@
 package com.javine.lessonrecord.ui.addedit;
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,12 +12,15 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.javine.lessonrecord.R;
 import com.javine.lessonrecord.data.Lesson;
@@ -22,6 +28,7 @@ import com.javine.lessonrecord.util.SnackbarUtils;
 import com.javine.lessonrecord.viewmodel.AddEditViewModel;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -29,7 +36,7 @@ import java.util.Date;
  * @文件作者 : KuangYu
  * @创建时间 : 18-10-8
  */
-public class AddEditLessonFragment extends Fragment {
+public class AddEditLessonFragment extends Fragment implements View.OnClickListener {
 
     public static final String ARGUMENT_EDIT_LESSON_ID = "EDIT_TASK_ID";
 
@@ -72,6 +79,8 @@ public class AddEditLessonFragment extends Fragment {
         mSalaryEditText = root.findViewById(R.id.salary);
         mDateTextView = root.findViewById(R.id.date);
         mTimeTextView = root.findViewById(R.id.time);
+        mDateTextView.setOnClickListener(this);
+        mTimeTextView.setOnClickListener(this);
     }
 
     @Override
@@ -181,5 +190,53 @@ public class AddEditLessonFragment extends Fragment {
 
     private boolean hasContent(EditText editText) {
         return editText != null && editText.getText().length() > 0;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.date:
+                showDatePicker();
+                break;
+            case R.id.time:
+                showDateTimePicker();
+                break;
+        }
+    }
+
+    private void showDateTimePicker() {
+        if (mCurrentDate == null) {
+            mCurrentDate = new Date();
+        }
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), AlertDialog.THEME_HOLO_LIGHT, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int hour, int min) {
+                mCurrentDate.setHours(hour);
+                mCurrentDate.setMinutes(min);
+                setTimeUI();
+                Log.d("Javine", "setTime" + mCurrentDate.toString());
+            }
+        }, mCurrentDate.getHours(), mCurrentDate.getMinutes(), true);
+        timePickerDialog.show();
+    }
+
+    private void showDatePicker() {
+        if (mCurrentDate == null) {
+            mCurrentDate = new Date();
+        }
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext());
+        datePickerDialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                mCurrentDate.setDate(day);
+                mCurrentDate.setYear(year);
+                mCurrentDate.setMonth(month);
+                setTimeUI();
+                Log.d("Javine", "setDate" + mCurrentDate.toString());
+            }
+        });
+        datePickerDialog.show();
     }
 }
