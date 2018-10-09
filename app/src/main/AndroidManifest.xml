@@ -20,6 +20,8 @@
 
         <activity android:name=".ui.addedit.AddEditLessonActivity"/>
 
+        <activity android:name=".ui.statistics.StatisticActivity" />
+
     </application>
 
 </manifest>

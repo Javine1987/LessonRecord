@@ -46,6 +46,7 @@ public class AddEditLessonFragment extends Fragment implements View.OnClickListe
 
     private Lesson mCurrentLesson;
     private Date mCurrentDate;
+    private Calendar mSetCalendar;
 
     private AutoCompleteTextView mStudioTextView; //舞蹈室名称
     private EditText mDurationEditText;  //时长
@@ -118,6 +119,11 @@ public class AddEditLessonFragment extends Fragment implements View.OnClickListe
         if (mCurrentDate == null){
             mCurrentDate = new Date();
         }
+        if (mSetCalendar == null) {
+            mSetCalendar = Calendar.getInstance();
+        }
+        //同步date到calendar
+        mSetCalendar.setTime(mCurrentDate);
         String dateString = new SimpleDateFormat("yyyy-MM-dd E").format(mCurrentDate);
         mDateTextView.setText(dateString);
         String timeString = new SimpleDateFormat("HH:mm").format(mCurrentDate);
@@ -205,34 +211,35 @@ public class AddEditLessonFragment extends Fragment implements View.OnClickListe
     }
 
     private void showDateTimePicker() {
-        if (mCurrentDate == null) {
-            mCurrentDate = new Date();
+        if (mSetCalendar == null) {
+            mSetCalendar = Calendar.getInstance();
         }
 
         TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), AlertDialog.THEME_HOLO_LIGHT, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int hour, int min) {
-                mCurrentDate.setHours(hour);
-                mCurrentDate.setMinutes(min);
+                mSetCalendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
+                mSetCalendar.set(Calendar.MINUTE, timePicker.getMinute());
+                mCurrentDate = mSetCalendar.getTime();
                 setTimeUI();
-                Log.d("Javine", "setTime" + mCurrentDate.toString());
             }
-        }, mCurrentDate.getHours(), mCurrentDate.getMinutes(), true);
+        }, mSetCalendar.get(Calendar.HOUR_OF_DAY), mSetCalendar.get(Calendar.MINUTE), true);
         timePickerDialog.show();
     }
 
     private void showDatePicker() {
-        if (mCurrentDate == null) {
-            mCurrentDate = new Date();
+        if (mSetCalendar == null) {
+            mSetCalendar = Calendar.getInstance();
         }
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext());
         datePickerDialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                mCurrentDate.setDate(day);
-                mCurrentDate.setYear(year);
-                mCurrentDate.setMonth(month);
+                mSetCalendar.set(Calendar.DAY_OF_MONTH,datePicker.getDayOfMonth());
+                mSetCalendar.set(Calendar.MONTH, datePicker.getMonth());
+                mSetCalendar.set(Calendar.YEAR, datePicker.getYear());
+                mCurrentDate = mSetCalendar.getTime();
                 setTimeUI();
                 Log.d("Javine", "setDate" + mCurrentDate.toString());
             }
