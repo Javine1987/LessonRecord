@@ -58,7 +58,7 @@ public class LessonListFragment extends Fragment {
             mView = inflater.inflate(R.layout.content_main, container, false);
             mRecyclerView = mView.findViewById(R.id.recycler_view);
             mAdapter = new MyAdapter();
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, true));
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
             mRecyclerView.setItemAnimator(new DefaultItemAnimator());

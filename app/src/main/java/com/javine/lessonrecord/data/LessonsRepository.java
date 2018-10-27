@@ -3,9 +3,8 @@ package com.javine.lessonrecord.data;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * @文件描述 : 数据仓库,可兼容本地数据及远程数据, 并且缓存取出的数据供全局使用
@@ -21,7 +20,7 @@ public class LessonsRepository implements LessonsDataSource {
     /**
      * This variable has package local visibility so it can be accessed from tests.
      */
-    Map<String, Lesson> mCachedLessons;
+    private ArrayList<Lesson> mCachedLessons;
 
     /**
      * Marks the cache as invalid, to force an update the next time data is requested. This variable
@@ -53,10 +52,11 @@ public class LessonsRepository implements LessonsDataSource {
         checkNotNull(callback);
 
         if (mCachedLessons != null && !mCacheIsDirty) {
-            callback.onLessonsLoaded(new ArrayList<Lesson>(mCachedLessons.values()));
+            callback.onLessonsLoaded(new ArrayList<>(mCachedLessons));
             return;
         }
 
+        // TODO: 18-10-14 需要修改：根据时间查询最近两月的数据
         mLessonDataSource.getLessons(new LoadLessonsCallback() {
             @Override
             public void onLessonsLoaded(List<Lesson> lessons) {
@@ -86,9 +86,9 @@ public class LessonsRepository implements LessonsDataSource {
             @Override
             public void onLessonLoaded(Lesson lesson) {
                 if (mCachedLessons == null) {
-                    mCachedLessons = new LinkedHashMap<>();
+                    mCachedLessons = new ArrayList<>();
                 }
-                mCachedLessons.put(lesson.getId(), lesson);
+                mCachedLessons.add(lesson);
                 callback.onLessonLoaded(lesson);
             }
 
@@ -105,9 +105,57 @@ public class LessonsRepository implements LessonsDataSource {
         mLessonDataSource.saveLesson(lesson);
 
         if (mCachedLessons == null) {
-            mCachedLessons = new LinkedHashMap<>();
+            mCachedLessons = new ArrayList<>();
+            mCachedLessons.add(lesson);
+        } else {
+            insertToCacheByDateOrder(lesson);
         }
-        mCachedLessons.put(lesson.getId(), lesson);
+
+    }
+
+    /**
+     * 插入数据到缓存列表中，以date排序
+     * @param lesson
+     */
+    private void insertToCacheByDateOrder(Lesson lesson) {
+        int count = mCachedLessons.size();
+        int insertPoistion = -1;
+        long curDateTime = lesson.getDate().getTime();
+        int minIndex = 0;
+        int maxIndex = count - 1;
+        // 二分查询法 查找需要插入的position
+        while (minIndex < maxIndex) {
+            Lesson firstItem = mCachedLessons.get(minIndex);
+            if (curDateTime > firstItem.getDate().getTime()){
+                insertPoistion = minIndex;
+                break;
+            }
+            if (minIndex + 1 < maxIndex) {
+                int middle = ((maxIndex + minIndex) / 2);
+                Lesson middleItem = mCachedLessons.get(middle);
+                long middleDateTime = middleItem.getDate().getTime();
+
+                if (curDateTime < middleDateTime) {
+                    minIndex = middle;
+                } else if (curDateTime > middleDateTime) {
+                    maxIndex = middle;
+                    minIndex++;
+                }
+            } else {
+                if (curDateTime > mCachedLessons.get(maxIndex).getDate().getTime()) {
+                    insertPoistion = maxIndex;
+                } else {
+                    insertPoistion = maxIndex + 1;
+                }
+                break;
+            }
+        }
+
+        if (insertPoistion >= 0 && insertPoistion < count) {
+            mCachedLessons.add(insertPoistion, lesson);
+        } else {
+            mCachedLessons.add(lesson);
+        }
     }
 
     @Override
@@ -119,24 +167,22 @@ public class LessonsRepository implements LessonsDataSource {
     public void deleteLessons(Lesson... lessons) {
         mLessonDataSource.deleteLessons(lessons);
         for (Lesson lesson : lessons) {
-            mCachedLessons.remove(lesson.getId());
+            mCachedLessons.remove(lesson);
         }
     }
 
     @Override
     public void deleteLesson(@NonNull String lessonId) {
         mLessonDataSource.deleteLesson(checkNotNull(lessonId));
-        mCachedLessons.remove(lessonId);
+        mCachedLessons.remove(getLessonWithId(lessonId));
     }
 
     private void refreshCache(List<Lesson> lessons) {
         if (mCachedLessons == null) {
-            mCachedLessons = new LinkedHashMap<>();
+            mCachedLessons = new ArrayList<>();
         }
         mCachedLessons.clear();
-        for (Lesson lesson : lessons) {
-            mCachedLessons.put(lesson.getId(), lesson);
-        }
+        mCachedLessons.addAll(lessons);
         mCacheIsDirty = false;
     }
 
@@ -145,7 +191,12 @@ public class LessonsRepository implements LessonsDataSource {
         if (mCachedLessons == null || mCachedLessons.isEmpty()) {
             return null;
         } else {
-            return mCachedLessons.get(lessonId);
+            for (Lesson lesson : mCachedLessons){
+                if (lessonId.equals(lesson.getId())){
+                    return lesson;
+                }
+            }
+            return null;
         }
     }
 }

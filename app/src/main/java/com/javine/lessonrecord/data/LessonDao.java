@@ -17,11 +17,20 @@ import java.util.List;
 @Dao
 public interface LessonDao {
 
-    @Query("SELECT * FROM lessons")
+    @Query("SELECT * FROM lessons ORDER BY date DESC")
     List<Lesson> getAllLessons();
 
     @Query("SELECT * FROM lessons WHERE entryid = :lessonId")
     Lesson getLessonById(String lessonId);
+
+    /**
+     * 按时间段查询记录，并按事件逆序排列
+     * @param begin 开始时间
+     * @param end 结束时间
+     * @return 给定范围内的记录列表
+     */
+    @Query("SELECT * FROM lessons WHERE date >= :begin AND date <= :end ORDER BY date DESC")
+    List<Lesson> getLessonsByDate(Long begin, Long end);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertLesson(Lesson lesson);
