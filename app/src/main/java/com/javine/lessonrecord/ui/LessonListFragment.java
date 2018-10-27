@@ -2,6 +2,7 @@ package com.javine.lessonrecord.ui;
 
 import android.arch.lifecycle.Observer;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,6 +22,8 @@ import android.widget.TextView;
 import com.javine.lessonrecord.MainActivity;
 import com.javine.lessonrecord.R;
 import com.javine.lessonrecord.data.Lesson;
+import com.javine.lessonrecord.ui.addedit.AddEditLessonActivity;
+import com.javine.lessonrecord.ui.addedit.AddEditLessonFragment;
 import com.javine.lessonrecord.viewmodel.LessonViewModel;
 
 import java.text.SimpleDateFormat;
@@ -52,12 +55,21 @@ public class LessonListFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
         if (mView == null) {
             mView = inflater.inflate(R.layout.content_main, container, false);
             mRecyclerView = mView.findViewById(R.id.recycler_view);
             mAdapter = new MyAdapter();
+            mAdapter.setOnItemClickListener(new OnItemClickListener() {
+                @Override
+                public void onItemClick(MyViewHolder holder, int position) {
+                    String lessonId = mAdapter.getLessonId(holder.getAdapterPosition());
+                    Intent intent = new Intent(getActivity(), AddEditLessonActivity.class);
+                    intent.putExtra(AddEditLessonFragment.ARGUMENT_EDIT_LESSON_ID, lessonId);
+                    getActivity().startActivity(intent);
+                }
+            });
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
@@ -113,13 +125,18 @@ public class LessonListFragment extends Fragment {
         super.onDestroy();
     }
 
-    class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
+    public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
 
         private List<Lesson> mData;
+        private OnItemClickListener clickListener;
 
         public void setData(List<Lesson> data){
             mData = data;
             notifyDataSetChanged();
+        }
+
+        public String getLessonId(int position) {
+            return (mData == null || mData.size() <= position) ? null : mData.get(position).getId();
         }
 
         @NonNull
@@ -130,8 +147,16 @@ public class LessonListFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
             holder.bindContent(mData.get(position));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (clickListener != null) {
+                        clickListener.onItemClick(holder, position);
+                    }
+                }
+            });
         }
 
         @Override
@@ -140,7 +165,13 @@ public class LessonListFragment extends Fragment {
         }
 
         // TODO: 18-9-30 点击事件
+        public void setOnItemClickListener(OnItemClickListener listener){
+            clickListener = listener;
+        }
+    }
 
+    public interface OnItemClickListener{
+        void onItemClick(MyViewHolder holder, int position);
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder{

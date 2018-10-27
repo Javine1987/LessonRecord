@@ -6,6 +6,7 @@
     <string name="nav_header_subtitle">Just For Funny</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-    <string name="edit_lesson">编辑记录</string>
+    <string name="action_delete">Delete</string>
+    <string name="edit_lesson">修改记录</string>
     <string name="add_lesson">新记录</string>
 </resources>

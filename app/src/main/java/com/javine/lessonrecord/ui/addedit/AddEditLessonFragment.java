@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.arch.lifecycle.Observer;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
@@ -53,6 +57,7 @@ public class AddEditLessonFragment extends Fragment implements View.OnClickListe
     private EditText mSalaryEditText;   //报酬
     private TextView mDateTextView;     //日期
     private TextView mTimeTextView;     //时间
+    private AlertDialog mDeleteDialog;
 
     public static AddEditLessonFragment newInstance(){
         return new AddEditLessonFragment();
@@ -137,8 +142,8 @@ public class AddEditLessonFragment extends Fragment implements View.OnClickListe
     private void updateUi(Lesson lesson) {
         mCurrentLesson = lesson;
         mStudioTextView.setText(lesson.getPlace());
-        mDurationEditText.setText(lesson.getDurationString());
-        mSalaryEditText.setText(lesson.getSalaryString());
+        mDurationEditText.setText(String.valueOf(lesson.getDuration()));
+        mSalaryEditText.setText(String.valueOf(lesson.getSalary()));
         mCurrentDate = lesson.getDate();
         setTimeUI();
     }
@@ -187,11 +192,44 @@ public class AddEditLessonFragment extends Fragment implements View.OnClickListe
         if (actionBar == null) {
             return;
         }
-        if (getArguments() != null && getArguments().get(ARGUMENT_EDIT_LESSON_ID) != null) {
+        if (ifHasLessonId()) {
             actionBar.setTitle(R.string.edit_lesson);
         } else {
             actionBar.setTitle(R.string.add_lesson);
         }
+    }
+
+    private boolean ifHasLessonId() {
+        return mLessonId != null
+                || (getArguments() != null && (mLessonId = getArguments().getString(ARGUMENT_EDIT_LESSON_ID)) != null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (getActivity() != null && ifHasLessonId()){
+            getActivity().getMenuInflater().inflate(R.menu.edit_menu, menu);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_delete) {
+            if (mDeleteDialog == null) {
+                mDeleteDialog = new AlertDialog.Builder(getContext()).setMessage("删除这节课的记录？")
+                        .setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mViewModel.deleteLesson(mLessonId);
+                        if (getActivity() != null) {
+                            getActivity().finish();
+                        }
+                    }
+                }).create();
+            }
+            mDeleteDialog.show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private boolean hasContent(EditText editText) {

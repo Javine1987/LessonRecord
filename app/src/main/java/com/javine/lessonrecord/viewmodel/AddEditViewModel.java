@@ -10,7 +10,7 @@ import com.javine.lessonrecord.data.LessonsDataSource;
 import com.javine.lessonrecord.data.LessonsRepository;
 
 /**
- * @文件描述 :
+ * @文件描述 : 编辑页面vm
  * @文件作者 : KuangYu
  * @创建时间 : 18-10-8
  */
@@ -52,5 +52,9 @@ public class AddEditViewModel extends AndroidViewModel implements LessonsDataSou
     @Override
     public void onDataNotAvailable() {
         mCurrentLesson.setValue(null);
+    }
+
+    public void deleteLesson(String lessonId) {
+        mRepository.deleteLesson(lessonId);
     }
 }
